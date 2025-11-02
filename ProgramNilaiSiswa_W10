@@ -1,0 +1,107 @@
+	#include <iostream>
+#include <string>
+#include <iomanip>
+using namespace std;
+const int Max_Students = 20;
+const int LebarKolomNama = 30;
+struct studentType {
+    string studentFName;
+    string studentLName;
+    int testScore;
+    char grade;
+};
+bool readOneLine(string &f, string &l, int &s, int index) {
+    cout << "Masukkan data siswa ke-" << (index + 1)
+         << " (NamaDepan NamaBelakang Nilai) : ";
+    if (!(cin >> f)) return false;            
+    if (f == "END" || f == "end") return false;
+    if (!(cin >> l >> s)) return false;      
+    return true;
+}
+void readStudents(studentType students[], int &count) {
+    count = 0;
+    cout << "== PROGRAM INPUT NILAI SISWA ==\n" << endl;
+    cout << "Masukkan data siswa maksimal " << Max_Students << " orang.\n";
+    cout << "Gunakan format: NamaDepan NamaBelakang Nilai (0-100)\n";
+    cout << "Ketik 'END' jika sudah selesai memasukkan data dan ingin berhenti.\n\n";
+    while (count < Max_Students) {
+        string f, l;
+        int s;
+        if (!readOneLine(f, l, s, count)) break;
+        if (s < 0 || s > 100) {
+            cout << "Maaf! Nilai tidak valid! Harus dalam rentang antara 0 sampai 100!\n";
+            cout << "Silakan masukkan ulang data siswa tersebut.\n\n";
+            continue;
+        }
+        students[count].studentFName = f;
+        students[count].studentLName = l;
+        students[count].testScore = s;
+        students[count].grade = 'E';
+        ++count;
+    }
+    cout << "\nData siswa berhasil dibaca sebanyak " << count << " orang.\n";
+    cout << "-----------------------------------------------------\n";
+}
+void assignGrades(studentType students[], int count) {
+    for (int i = 0; i < count; ++i) {
+        int sc = students[i].testScore;
+        if (sc >= 85) students[i].grade = 'A';
+        else if (sc >= 65) students[i].grade = 'B';
+        else if (sc >= 50) students[i].grade = 'C';
+        else if (sc >= 40) students[i].grade = 'D';
+        else students[i].grade = 'E';
+    }
+}
+int findHighestScore(const studentType students[], int count) {
+    if (count == 0) return -1;
+    int maxv = students[0].testScore;
+    for (int i = 1; i < count; ++i)
+        if (students[i].testScore > maxv) maxv = students[i].testScore;
+    return maxv;
+}
+string formatName(const studentType &s) {
+    return s.studentLName + ", " + s.studentFName;
+}
+void printAllStudents(const studentType students[], int count) {
+    cout << "Daftar Nilai Siswa:\n";
+    cout << left << setw(LebarKolomNama) << "Nama"
+         << setw(10) << "Nilai"
+         << "Grade\n";
+    cout << string(LebarKolomNama + 20, '-') << "\n";
+    for (int i = 0; i < count; ++i) {
+        cout << left << setw(LebarKolomNama) << formatName(students[i])
+             << setw(10) << students[i].testScore
+             << students[i].grade << "\n";
+    }
+}
+void printHighestStudents(const studentType students[], int count, int highest) {
+    if (highest < 0) {
+        cout << "Tidak ada data siswa.\n";
+        return;
+    }
+    cout << "\nNilai tertinggi: " << highest << "\n";
+    cout << "Siswa dengan nilai tertinggi:\n";
+    for (int i = 0; i < count; ++i) {
+        if (students[i].testScore == highest) {
+            cout << " - " << formatName(students[i]) << "\n";
+        }
+    }
+}
+void processStudents() {
+    studentType students[Max_Students];
+    int count;
+    readStudents(students, count);
+    if (count == 0) {
+        cout << "Tidak ada data yang dimasukkan. Program berhenti.\n";
+        return;
+    }
+    assignGrades(students, count);
+    int highest = findHighestScore(students, count);
+    printAllStudents(students, count);
+    printHighestStudents(students, count, highest);
+    cout << "\nProgram selesai dijalankan. Terima kasih!\n";
+}
+int main() {
+    processStudents();
+    return 0;
+}
